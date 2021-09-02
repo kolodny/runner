@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.js": "/runner/build/static/js/main.72941a25.chunk.js",
+    "main.js.map": "/runner/build/static/js/main.72941a25.chunk.js.map",
+    "runtime-main.js": "/runner/build/static/js/runtime-main.4ea0b5b0.js",
+    "runtime-main.js.map": "/runner/build/static/js/runtime-main.4ea0b5b0.js.map",
+    "static/js/2.4790c414.chunk.js": "/runner/build/static/js/2.4790c414.chunk.js",
+    "static/js/2.4790c414.chunk.js.map": "/runner/build/static/js/2.4790c414.chunk.js.map",
+    "index.html": "/runner/build/index.html",
+    "static/js/2.4790c414.chunk.js.LICENSE.txt": "/runner/build/static/js/2.4790c414.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.4ea0b5b0.js",
+    "static/js/2.4790c414.chunk.js",
+    "static/js/main.72941a25.chunk.js"
+  ]
+}
