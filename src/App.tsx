@@ -1,7 +1,27 @@
 import React from 'react';
 import { c25k } from './c25k';
 
-const WS_ENDPOINT = `ws://192.168.86.85/control`;
+const findIp = async () => {
+  for (let i = 0; i < 255; i++) {
+    const ws = new WebSocket(`ws://10.0.0.${i}/control`);
+    const timeout = new Promise((r) => setTimeout(r, 10000));
+    const wsPromise = new Promise((r, j) => {
+      ws.onopen = () => r(true);
+      ws.onerror = () => r(false);
+    });
+    const found = await Promise.race([wsPromise, timeout]);
+    if (found) {
+      console.log(found);
+      return;
+    }
+  }
+};
+
+//findIp();
+
+console.log(findIp);
+
+const WS_ENDPOINT = `ws://10.0.0.3/control`;
 
 console.log(c25k);
 
@@ -27,7 +47,9 @@ export const App: React.FC = () => {
   React.useEffect(() => {
     ws.onopen = () => setConnected(true);
   });
-  const intervals = c25k.week2[2];
+  const [week, setWeek] = React.useState('week 1');
+  const [day, setDay] = React.useState(0);
+  const intervals = c25k[week]?.[day];
   const totalTime = intervals.steps.reduce((acc, cur) => acc + cur.time, 0);
   const [time, setTime] = React.useState(0);
   const [running, setRunning] = React.useState(false);
@@ -66,7 +88,7 @@ export const App: React.FC = () => {
   React.useEffect(() => {
     if (running) {
       const isRun = currentStep.type === 'run';
-      setMPH(isRun ? 6 : 3);
+      setMPH(isRun ? 6.22 : 3.5);
     } else {
       setMPH(0);
     }
@@ -88,6 +110,23 @@ export const App: React.FC = () => {
           {formatTime(currentStep.time - currentActivityTime)}
         </div>
       </div>
+      <select
+        onChange={(e) => {
+          setWeek(e.target.value);
+          if (!c25k[e.target.value][day]) {
+            setDay(0);
+          }
+        }}
+      >
+        {Object.keys(c25k).map((w) => (
+          <option>{w}</option>
+        ))}
+      </select>
+      <select onChange={(e) => setDay(+e.target.value)}>
+        {Object.keys(c25k[week]).map((d) => (
+          <option>{d}</option>
+        ))}
+      </select>
       <div>Total Elapsed {formatTime(time)}</div>
       <div>Total Remaining {formatTime(totalTime - time)}</div>
       <div>Pulse: {pulse}</div>
