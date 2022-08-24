@@ -136,5 +136,47 @@ export const c25k: Record<
         { type: 'run', time: 480 },
       ],
     },
+
+    {
+      steps: [
+        { type: 'warmup', time: 300 },
+
+        { type: 'run', time: 1200 },
+      ],
+    },
+  ],
+  'week 6': [
+    {
+      steps: [
+        { type: 'warmup', time: 300 },
+
+        { type: 'run', time: 300 },
+        { type: 'walk', time: 180 },
+
+        { type: 'run', time: 480 },
+        { type: 'walk', time: 180 },
+
+        { type: 'run', time: 300 },
+      ],
+    },
+
+    {
+      steps: [
+        { type: 'warmup', time: 300 },
+
+        { type: 'run', time: 600 },
+        { type: 'walk', time: 180 },
+
+        { type: 'run', time: 600 },
+      ],
+    },
+
+    {
+      steps: [
+        { type: 'warmup', time: 300 },
+
+        { type: 'run', time: 1500 },
+      ],
+    },
   ],
 };
