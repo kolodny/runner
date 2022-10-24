@@ -1,37 +1,31 @@
 import React from 'react';
 import { c25k } from './c25k';
+import _ from 'lodash';
 
-const findIp = async () => {
-  for (let i = 0; i < 255; i++) {
-    const ws = new WebSocket(`ws://10.0.0.${i}/control`);
-    const timeout = new Promise((r) => setTimeout(r, 10000));
-    const wsPromise = new Promise((r, j) => {
-      ws.onopen = () => r(true);
-      ws.onerror = () => r(false);
-    });
-    const found = await Promise.race([wsPromise, timeout]);
-    if (found) {
-      console.log(found);
-      return;
-    }
-  }
+const WS_ENDPOINT = `ws://192.168.1.187/control`;
+
+const COMMANDS = {
+  MPH: 'MPH',
+  FAN: 'Fan Speed',
+  INCLINE: 'Incline',
 };
 
-//findIp();
-
-console.log(findIp);
-
-const WS_ENDPOINT = `ws://10.0.0.3/control`;
-
-console.log(c25k);
+const infoList = [
+  'Miles',
+  'Current MPH',
+  'Hand Pulse',
+  'Chest Pulse',
+  'Incline',
+];
 
 export const App: React.FC = () => {
-  const [pulse, setPulse] = React.useState(0);
   const ws = React.useMemo(() => new WebSocket(WS_ENDPOINT), []);
+  const [info, setInfo] = React.useState<any>({});
   ws.onmessage = (m) => {
     const values = JSON.parse(m.data)?.values;
-    if (values?.['Chest Pulse']) {
-      setPulse(+values['Chest Pulse'] ?? pulse);
+    if (values) {
+      console.log(values);
+      setInfo({ ...info, ...values });
     }
   };
   const [connected, setConnected] = React.useState(false);
@@ -39,7 +33,35 @@ export const App: React.FC = () => {
     (mph: number) => {
       try {
         console.log('setting speed to', mph);
-        ws.send(JSON.stringify({ values: { MPH: `${mph}` }, type: 'set' }));
+        ws.send(
+          JSON.stringify({ values: { [COMMANDS.MPH]: `${mph}` }, type: 'set' })
+        );
+      } catch {}
+    },
+    [ws]
+  );
+  const setFan = React.useCallback(
+    (speed: number) => {
+      try {
+        ws.send(
+          JSON.stringify({
+            values: { [COMMANDS.FAN]: `${speed}` },
+            type: 'set',
+          })
+        );
+      } catch {}
+    },
+    [ws]
+  );
+  const setIncline = React.useCallback(
+    (incline: number) => {
+      try {
+        ws.send(
+          JSON.stringify({
+            values: { [COMMANDS.INCLINE]: `${incline}` },
+            type: 'set',
+          })
+        );
       } catch {}
     },
     [ws]
@@ -129,7 +151,6 @@ export const App: React.FC = () => {
       </select>
       <div>Total Elapsed {formatTime(time)}</div>
       <div>Total Remaining {formatTime(totalTime - time)}</div>
-      <div>Pulse: {pulse}</div>
       <input
         type="range"
         min={0}
@@ -142,6 +163,13 @@ export const App: React.FC = () => {
         <button onClick={() => setRunning((r) => !done && true)}>Start</button>
         <button onClick={() => setRunning((r) => !done && false)}>Stop</button>
       </div>
+      <div>
+        <button onClick={() => setIncline(+info.Incline - 1)}>🗻 +</button>
+        <button onClick={() => setIncline(+info.Incline + 1)}>🗻 -</button>
+        <button onClick={() => setFan(100)}>💨 On</button>
+        <button onClick={() => setFan(0)}>💨 Off</button>
+      </div>
+      <pre>{JSON.stringify(_.pick(info, infoList), null, 2).slice(1, -1)}</pre>
     </div>
   );
 };
