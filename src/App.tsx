@@ -12,6 +12,7 @@ const COMMANDS = {
 
 const infoList = [
   'Miles',
+  'Kilometers',
   'Current MPH',
   'Hand Pulse',
   'Chest Pulse',
